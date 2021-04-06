@@ -32,6 +32,7 @@ func Handler(ctx context.Context, S3Event events.S3Event) {
 	mySession := session.Must(session.NewSession())
 	downloader := s3manager.NewDownloader(mySession)
 
+	//downloading file from s3 bucket
 	_, err := downloader.Download(file,
 		&s3.GetObjectInput{
 			Bucket: aws.String(S3Event.Records[0].S3.Bucket.Name),
@@ -41,13 +42,14 @@ func Handler(ctx context.Context, S3Event events.S3Event) {
 		exitErrorf("Unable to download s3File %q, %v", S3Event.Records[0].S3.Object.Key, err)
 	}
 
+	//read file from disk
 	dat, readerr := ioutil.ReadFile(file.Name())
 
 	if readerr != nil {
 		exitErrorf("Cannot read the file", readerr)
 	}
 
-	//remove Hyphen
+	//configure mxj to not prepend Hyphens
 	mxj.PrependAttrWithHyphen(false)
 
 	//read data into xml Map
@@ -65,12 +67,13 @@ func Handler(ctx context.Context, S3Event events.S3Event) {
 		exitErrorf("Unable to convert to json %q, %v", S3Event.Records[0].S3.Object.Key, jsonerr)
 	}
 
-	// create new filename
+	// create new filename for json file
 	json_filename := strings.Replace(S3Event.Records[0].S3.Object.Key, ".xml", ".json", 1)
 
-	//write json to file
+	//write json data to file
 	_ = ioutil.WriteFile("/tmp/"+json_filename, jsonVal, 0644)
 
+	//read json file from disk to upload it
 	json_file, err := os.Open("/tmp/" + json_filename)
 	if err != nil {
 		exitErrorf("Unable to open file %q, %v", err)
