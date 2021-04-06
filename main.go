@@ -47,6 +47,9 @@ func Handler(ctx context.Context, S3Event events.S3Event) {
 		exitErrorf("Cannot read the file", readerr)
 	}
 
+	//remove Hyphen
+	mxj.PrependAttrWithHyphen(false)
+
 	//read data into xml Map
 	mapVal, xmlerr := mxj.NewMapXml(dat)
 
