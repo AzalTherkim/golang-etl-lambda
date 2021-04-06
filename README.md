@@ -53,7 +53,3 @@ terraform apply
 # See it work
 
 Upload a xml file to the xml bucket
-
-# Thoughts
-
-Not really happy with the writing to disk. As far as i can see only a move to the V2-SDK when that's available.
