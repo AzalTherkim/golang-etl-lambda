@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/clbanning/mxj/v2"
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -46,11 +47,26 @@ func Handler(ctx context.Context, S3Event events.S3Event) {
 		exitErrorf("Cannot read the file", readerr)
 	}
 
-	//ToDo: implement transformation
+	//read data into xml Map
+	mapVal, xmlerr := mxj.NewMapXml(dat)
 
+	if xmlerr != nil {
+		// handle error
+		exitErrorf("Unable to parse xmlFile %q, %v", S3Event.Records[0].S3.Object.Key, xmlerr)
+	}
+
+	//convert data into json
+	jsonVal, jsonerr := mapVal.Json()
+	if jsonerr != nil {
+		// handle error
+		exitErrorf("Unable to convert to json %q, %v", S3Event.Records[0].S3.Object.Key, jsonerr)
+	}
+
+	// create new filename
 	json_filename := strings.Replace(S3Event.Records[0].S3.Object.Key, ".xml", ".json", 1)
 
-	_ = ioutil.WriteFile("/tmp/"+json_filename, dat, 0644)
+	//write json to file
+	_ = ioutil.WriteFile("/tmp/"+json_filename, jsonVal, 0644)
 
 	json_file, err := os.Open("/tmp/" + json_filename)
 	if err != nil {
