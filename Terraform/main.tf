@@ -38,7 +38,7 @@ resource "aws_iam_role_policy_attachment" "lambda_execution" {
 
 }
 
-# This is very broad needs refinment
+# This is very broad might make more sense to change this in the long term
 resource "aws_iam_role_policy_attachment" "s3_access" {
 
   role       = aws_iam_role.iam_for_lambda.name
@@ -57,7 +57,7 @@ resource "aws_lambda_permission" "allow_xml_bucket" {
 
 resource "aws_lambda_function" "transform_code" {
   filename      = "main.zip"
-  function_name = "transform_code"
+  function_name = var.function_name
   role          = aws_iam_role.iam_for_lambda.arn
   handler       = "main"
   runtime       = "go1.x" 
@@ -74,7 +74,7 @@ resource "aws_lambda_function" "transform_code" {
 data "aws_canonical_user_id" "current_user" {}
 
 resource "aws_s3_bucket" "xml_data" {
-  bucket = "xml-data-challenge-code-123456"
+  bucket = var.xml_bucket
 
   grant {
     id          = data.aws_canonical_user_id.current_user.id
@@ -84,7 +84,7 @@ resource "aws_s3_bucket" "xml_data" {
 }
 
 resource "aws_s3_bucket" "json_data" {
-  bucket = "json-data-challenge-code-123456"
+  bucket = var.json_bucket
 
   grant {
     id          = data.aws_canonical_user_id.current_user.id
