@@ -26,7 +26,7 @@ For how to build and get the zip file pls have a look at: https://docs.aws.amazo
 
 Example that works on windows:
 
-Build the go files:
+### Build the go files:
 
 ```
 set GOOS=linux
@@ -38,10 +38,13 @@ Create the zip
 %USERPROFILE%\Go\bin\build-lambda-zip.exe -output main.zip main
 ```
 
+### Terraform
+copy the main.zip into the terraform folder
+
+change into the Terraform folder:
 ```
 terraform init
 ```
-copy the main.zip into the terraform folder
 
 ```
 terraform apply
@@ -50,3 +53,7 @@ terraform apply
 # See it work
 
 Upload a xml file to the xml bucket
+
+# Thoughts
+
+Not really happy with the writing to disk. As far as i can see only a move to the V2-SDK when that's available.
