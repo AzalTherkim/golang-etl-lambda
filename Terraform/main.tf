@@ -38,6 +38,14 @@ resource "aws_iam_role_policy_attachment" "lambda_execution" {
 
 }
 
+# This is very broad needs refinment
+resource "aws_iam_role_policy_attachment" "s3_access" {
+
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+
+}
+
 
 resource "aws_lambda_permission" "allow_xml_bucket" {
   statement_id  = "AllowExecutionFromS3Bucket"
